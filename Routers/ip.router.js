@@ -6,22 +6,20 @@ const { Ip } = require("../module/ip.model")
 const { authenticator } = require("../middleware/auth")
 const { ipcheck } = require("../middleware/chekIp")
 
-IpRoute.get("/ip:ip",authenticator,ipcheck, async(req,res)=>{
+IpRoute.get("/ip/:ip",authenticator,ipcheck, async(req,res)=>{
     try {
-        const {ip}=req.params.ip || ip
+        const {ip}=req.params || ip
         let city;
 
         const data=await client.get(`${ip}`)
         if(data) return res.status(200).send({message:data})
 
-        const mongodata=await Ip.findOne({ip})
-        if(mongodata) return res.status(200).send({message:mongodata})
 
         const ipdata=await axios.get(`https://ipapi.co/${ip}/city/`)
         
         client.set(ip,JSON.stringify(ipdata.data))
 
-        const savedata=new Ip({Ip:ip})
+        const savedata=new Ip({Ip:JSON.stringify(ipdata.data)})
         await savedata.save()
 
         res.status(200).send({message:JSON.stringify(ipdata.data)})
