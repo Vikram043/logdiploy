@@ -9,9 +9,9 @@ const app=express()
 
 app.use(express.json())
 
-app.get('/',(req,res=>{
+app.get('/',(req,res)=>{
     res.status(200).send({message:"Welcome to home page"})
-}))
+})
 
 app.use("/",userRoute)
 
